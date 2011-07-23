@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Record Your Did-It
+{% endblock %}
+
+{% block content %}
+  {% if empty %}
+  <h3>Hmmm. No dun-did-its were submitted.</h3>
+  {% else %}{% if success %}
+  <h3>Yay! Your dun-did-its were saved.</h3>
+  {% else %}{% if fail %}
+  <h3>Fail! Sorry, we had trouble saving your dun-did-its. Please try again.</h3>
+  {% endif %}{% endif %}{% endif %}
+  <h3>Welcome {{ user.first_name }}!</h3>
+  <form method="post" action="." enctype="multipart/form-data">{% csrf_token %}
+      <div>
+          {% if daily_goals %}<h4>Daily Goals</h4>{% endif %}
+          {% for g in daily_goals %}
+          <div>
+              <span class="{% if g.done_today %}doneToday{% endif %}">{{ g.name }}</span>
+              <input type="{{ g.input_type }}" name="goal-{{ g.id }}" />
+          </div>
+          <div style="padding: 0 0 0 20px; font-size: 0.85em">
+              {{ g.progress_summary }}
+          </div>
+          {% endfor %}
+      </div>
+      <div>
+          <h4>Weekly Goals</h4>
+          {% for g in weekly_goals %}
+          <div>
+              <span class="{% if g.done_today %}doneToday{% endif %}">{{ g.name }}</span>
+              <input type="{{ g.input_type }}" name="goal-{{ g.id }}" />
+          </div>
+          <div style="padding: 0 0 0 20px; font-size: 0.85em">
+              {{ g.progress_summary }}
+          </div>
+          {% endfor %}
+      </div>
+      <div>
+          {% if monthly_goals %}<h4>Monthly Goals</h4>{% endif %}
+          {% for g in monthly_goals %}
+          <div>
+              <span class="{% if g.done_today %}doneToday{% endif %}">{{ g.name }}</span>
+              <input type="{{ g.input_type }}" name="goal-{{ g.id }}" />
+          </div>
+          <div style="padding: 0 0 0 20px; font-size: 0.85em">
+              {{ g.progress_summary }}
+          </div>
+          {% endfor %}
+      </div>
+      <button type="submit">Submit</button>
+  </form>
+{% endblock %}
+

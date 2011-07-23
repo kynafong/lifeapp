@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Add a Goal 
+{% endblock %}
+
+{% block content %}
+  {% if success %}
+    <h3>Sucess! New goal "{{ goal }}" was created.</h3>
+  {% else%}{% if fail %}
+    <h3>Fail! Sorry, we had trouble creating the new goal. Please try again.</h3>
+  {% endif %}{% endif %}
+  <form action="." method="post" enctype="multipart/form-data">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="submit">
+    <a href="/categories/">manage categories</a>
+  </form>
+    <h2>Your goals:</h2>
+    <ul>
+        {% for c in all_goals %}
+        <li>
+        {{ c.name }} ({{ c.input_type }}, {{ c.get_interval_display }} target: {{ c.target_total }}, category: {{ c.category.name }}, {{ c.is_public|yesno:"public,private" }})
+        <a href="/goal/{{ c.id }}/delete">Delete</a>
+        <a href="/goal/{{ c.id }}/public/">Make {% if c.is_public %}private{% else %}public{% endif %}</a>
+        </li>
+        {% empty %}
+        You need to add some goals!
+        {% endfor %}
+    </ul>
+  </form>
+{% endblock %}
+

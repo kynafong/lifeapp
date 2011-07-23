@@ -1,0 +1,19 @@
+/* CSS FILE */
+
+.mainTab {
+    padding-left: 3px;
+    padding-right: 3px;
+    font-size: 2em;
+}
+
+.miniTab {
+    padding-left: 3px;
+    padding-right: 3px;
+    font-size: 0.8em;
+}
+
+.doneToday {
+    color: green;
+}
+
+

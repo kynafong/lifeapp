@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Did-Its
+{% endblock %}
+
+{% block content %}
+  Here's what people have been dun-did-ing (as of {% now "M j, H:i" %})
+  <ul>
+  {% for d in dun_did_its %}
+  <li>
+  {{ d.user.first_name }} dun-did-it {{ d.didit_date|timesince }} ago: {% for s in d.summary %}{{ s.goal.name }}, {% endfor %}
+  </li>
+  {% empty %}
+  No activity!
+  {% endfor %}
+  </ul>
+{% endblock %}
+

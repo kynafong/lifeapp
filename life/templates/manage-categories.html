@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Add a Goal Category
+{% endblock %}
+
+{% block content %}
+  {% if success_save %}
+    <h3>Sucess! New category "{{ category }}" was created.</h3>
+  {% else%}{% if fail %}
+    <h3>Fail! Sorry, we had trouble creating the new category. Please try again.</h3>
+  {% endif %}{% endif %}
+  <form action="." method="post" enctype="multipart/form-data">{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="submit">
+    </form>
+    <h2>Your categories:</h2>
+    <ul>
+        {% for c in all_categories %}
+        <li>
+        {{ c.name }}
+        <a href="/category/{{ c.id }}/delete">Delete</a>
+        </li>
+        {% empty %}
+        You need to add some categories!  For example, "health", "fitness", "business"...
+        {% endfor %}
+    </ul>
+  </form>
+{% endblock %}
+
