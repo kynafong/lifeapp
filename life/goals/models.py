@@ -20,7 +20,7 @@ class GoalCategory(models.Model):
     name = models.CharField(max_length=1024)
 
     def __unicode__(self):
-        return '%s' %self.name
+        return '%s - %s' %(self.name, self.user.username)
 
 class Goal(models.Model):
     user = models.ForeignKey(User)
