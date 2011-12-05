@@ -9,10 +9,10 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 
 
-def gather_goals():
-    daily_goals = Goal.objects.filter(interval=1)
-    weekly_goals = Goal.objects.filter(interval=2)
-    monthly_goals = Goal.objects.filter(interval=3)
+def gather_goals(user):
+    daily_goals = Goal.objects.filter(user=user,interval=1)
+    weekly_goals = Goal.objects.filter(user=user,interval=2)
+    monthly_goals = Goal.objects.filter(user=user,interval=3)
     return {
         'daily_goals': daily_goals,
         'monthly_goals': monthly_goals,
@@ -33,7 +33,7 @@ def dun_did_it(request):
                         yup_diditall = DidItGroup(user=request.user)
                         yup_diditall.save()
                     goal_id = int(key.split('-')[-1])
-                    goal = Goal.objects.get(id=goal_id)
+                    goal = Goal.objects.get(user=request.user,id=goal_id)
                     if goal.input_type == 'checkbox':
                         value = 1
                     elif goal.input_type == 'input':
@@ -51,7 +51,7 @@ def dun_did_it(request):
         except ValueError:
             data['fail'] = True
 
-    data.update(gather_goals())
+    data.update(gather_goals(request.user))
     return render_to_response('dun-did-it.html', data, context_instance=RequestContext(request))
 
 
@@ -61,7 +61,7 @@ def add_goal(request):
 
     if request.method == 'GET':
         data = {'form': GoalForm()}
-        data['all_goals'] = Goal.objects.all()
+        data['all_goals'] = Goal.objects.filter(user=request.user)
         return render_to_response('manage-goals.html', data, context_instance=RequestContext(request))
 
     elif request.method == 'POST':
@@ -76,7 +76,7 @@ def add_goal(request):
         else:
             data['fail'] = True 
         data['form'] = GoalForm()
-        data['all_goals'] = Goal.objects.all()
+        data['all_goals'] = Goal.objects.filter(user=request.user)
         return render_to_response('manage-goals.html', data, context_instance=RequestContext(request))
 
 @login_required
@@ -84,7 +84,7 @@ def add_category(request):
 
     if request.method == 'GET':
         data = {'form': GoalCategoryForm()}
-        data['all_categories'] = GoalCategory.objects.all()
+        data['all_categories'] = GoalCategory.objects.filter(user=request.user)
         return render_to_response('manage-categories.html', data, context_instance=RequestContext(request))
 
     elif request.method == 'POST':
@@ -99,14 +99,14 @@ def add_category(request):
         else:
             data['fail'] = True
         data['form'] = GoalCategoryForm()
-        data['all_categories'] = GoalCategory.objects.all()
+        data['all_categories'] = GoalCategory.objects.filter(user=request.user)
         return render_to_response('manage-categories.html', data, context_instance=RequestContext(request))
 
 
 @login_required
 def delete_goal(request, goal_id):
     if request.method == 'GET':
-        goal = Goal.objects.get(id=goal_id)
+        goal = Goal.objects.get(user=request.user,id=goal_id)
         goal.delete()
         return HttpResponseRedirect('/goals/')
 
@@ -116,7 +116,7 @@ def delete_goal(request, goal_id):
 @login_required
 def delete_category(request, category_id):
     if request.method == 'GET':
-        category = GoalCategory.objects.get(id=category_id)
+        category = GoalCategory.objects.get(user=request.user,id=category_id)
         if Goal.objects.filter(category=category).exists():
             return HttpResponseBadRequest("Sorry, we cannot delete a category that has existing goals. Please delete those associated goals first.")
         category.delete()
@@ -137,7 +137,7 @@ def recent_didits(request):
 
 @login_required
 def toggle_goal_is_public(request, goal_id):
-    goal = Goal.objects.get(id=goal_id)
+    goal = Goal.objects.get(user=request.user,id=goal_id)
     is_public = goal.is_public
     goal.is_public = not is_public
     goal.save()
